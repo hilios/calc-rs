@@ -119,11 +119,6 @@ mod tests {
     }
 
     #[test]
-    fn to_string() {
-        let _str = "3 4 2 * 1 5 − 2 3 ^ ^ / +";
-    }
-
-    #[test]
     fn undo_number() {
         let expr = Number(2.0);
         let mut undo = expr.undo();

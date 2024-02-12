@@ -1,4 +1,3 @@
-use std::collections::VecDeque;
 use std::fmt::{Debug, Display, Formatter};
 
 use itertools::join;
@@ -8,7 +7,7 @@ use super::token::Token;
 
 #[derive(Debug)]
 struct Calc {
-    memory: VecDeque<Expr>
+    memory: Vec<Expr>
 }
 
 impl Display for Calc {
@@ -20,7 +19,7 @@ impl Display for Calc {
 impl Calc {
 
     pub fn postfix(input: &str) -> Result<Calc, String> {
-        let memory = VecDeque::with_capacity(100);
+        let memory = Vec::with_capacity(100);
         let mut calc = Calc { memory };
         for token in input.split_ascii_whitespace() {
             let token = Token::new(token);
@@ -32,7 +31,7 @@ impl Calc {
 
     pub fn infix(input: &str) -> Result<Calc, String> {
         let output = Token::shunting_yard(input);
-        let memory = VecDeque::with_capacity(100);
+        let memory = Vec::with_capacity(100);
         let mut calc = Calc { memory };
         for token in output {
             calc.parse_token(token)?;
@@ -43,50 +42,50 @@ impl Calc {
     fn parse_token(&mut self, token: Token) -> Result<(), String> {
         match token {
             Token::Plus => {
-                let y = self.memory.pop_back().ok_or("Missing operands")?;
-                let x = self.memory.pop_back().ok_or("Missing operand")?;
+                let y = self.memory.pop().ok_or("Missing operands")?;
+                let x = self.memory.pop().ok_or("Missing operand")?;
                 let e = Expr::Add(Box::from(x), Box::from(y));
-                self.memory.push_back(e);
+                self.memory.push(e);
             },
             Token::Minus => {
-                let y = self.memory.pop_back().ok_or("Missing operands")?;
-                let x = self.memory.pop_back().ok_or("Missing operand")?;
+                let y = self.memory.pop().ok_or("Missing operands")?;
+                let x = self.memory.pop().ok_or("Missing operand")?;
                 let e = Expr::Subtract(Box::from(x), Box::from(y));
-                self.memory.push_back(e);
+                self.memory.push(e);
             },
             Token::Slash => {
-                let y = self.memory.pop_back().ok_or("Missing operands")?;
-                let x = self.memory.pop_back().ok_or("Missing operand")?;
+                let y = self.memory.pop().ok_or("Missing operands")?;
+                let x = self.memory.pop().ok_or("Missing operand")?;
                 let e = Expr::Divide(Box::from(x), Box::from(y));
-                self.memory.push_back(e);
+                self.memory.push(e);
             },
             Token::Star => {
-                let y = self.memory.pop_back().ok_or("Missing operands")?;
-                let x = self.memory.pop_back().ok_or("Missing operand")?;
+                let y = self.memory.pop().ok_or("Missing operands")?;
+                let x = self.memory.pop().ok_or("Missing operand")?;
                 let e = Expr::Multiply(Box::from(x), Box::from(y));
-                self.memory.push_back(e);
+                self.memory.push(e);
             },
             Token::Caret => {
-                let y = self.memory.pop_back().ok_or("Missing operands")?;
-                let x = self.memory.pop_back().ok_or("Missing operand")?;
+                let y = self.memory.pop().ok_or("Missing operands")?;
+                let x = self.memory.pop().ok_or("Missing operand")?;
                 let e = Expr::Power(Box::from(x), Box::from(y));
-                self.memory.push_back(e);
+                self.memory.push(e);
             },
             Token::Sqrt => {
-                let x = self.memory.pop_back().ok_or("Missing operand")?;
+                let x = self.memory.pop().ok_or("Missing operand")?;
                 let e = Expr::Sqrt(Box::from(x));
-                self.memory.push_back(e);
+                self.memory.push(e);
 
             },
             Token::Undo => {
-                let x = self.memory.pop_back().ok_or("Nothing to undo")?;
+                let x = self.memory.pop().ok_or("Nothing to undo")?;
                 for expr in x.undo() {
-                    self.memory.push_back(expr.clone());
+                    self.memory.push(expr.clone());
                 }
             }
             Token::Number(n) => {
                 let e = Expr::Number(n);
-                self.memory.push_back(e);
+                self.memory.push(e);
             }
             Token::Unknown(t) => {
                 return Err(format!("Unknown token: {}", t))
@@ -113,7 +112,7 @@ mod tests {
     #[case("4 sqrt", 2.0)]
     fn should_parse_postfix(#[case] input: &str, #[case] output: f64) {
         let mut calc= Calc::postfix(input).unwrap();
-        let expr = calc.memory.pop_front().unwrap();
+        let expr = calc.memory.pop().unwrap();
         assert_eq!(expr.eval(), output);
     }
 
