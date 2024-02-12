@@ -1,12 +1,8 @@
-mod expr;
-mod token;
-
 use std::collections::VecDeque;
 use std::fmt::{Debug, Display, Formatter};
 use itertools::join;
-
-use expr::Expr;
-use token::Token;
+use super::expr::Expr;
+use super::token::Token;
 
 #[derive(Debug)]
 struct Calc {
