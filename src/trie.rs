@@ -60,9 +60,11 @@ mod tests {
     #[case("te", "test")]
     #[case("und", "undo")]
     #[case("u", "undo, unknown")]
-    fn should_parse_postfix(#[case] input: &str, #[case] output: &str) {
+    #[case("ok", "ok")]
+    #[case("okay", "")]
+    fn should_search(#[case] input: &str, #[case] output: &str) {
         let trie = Trie::new(vec![
-            "test", "undo", "unknown"
+            "test", "undo", "unknown", "ok"
         ]);
         let mut results = trie.starts_with(input);
         results.sort();
