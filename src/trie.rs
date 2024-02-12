@@ -6,7 +6,15 @@ pub struct Trie {
 }
 
 impl Trie {
-    pub fn new() -> Self {
+    pub fn new(words: Vec<&str>) -> Self {
+        let mut trie = Trie::empty();
+        for word in words {
+            trie.insert(word)
+        }
+        return trie
+    }
+
+    pub fn empty() -> Self {
         Trie {
             children: HashMap::new(),
             value: None
@@ -16,7 +24,7 @@ impl Trie {
     pub fn insert(&mut self, value: &str) {
         let mut child = self;
         for char in value.chars() {
-            child = child.children.entry(char).or_insert_with(Trie::new)
+            child = child.children.entry(char).or_insert_with(Trie::empty)
         }
         child.value = Some(value.to_string())
     }
@@ -40,4 +48,23 @@ impl Trie {
             self.collect(&child, results)
         }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[rstest]
+    #[case("te", "test")]
+    #[case("und", "undo")]
+    #[case("u", "undo, unknown")]
+    fn should_parse_postfix(#[case] input: &str, #[case] output: &str) {
+        let trie = Trie::new(vec![
+            "test", "undo", "unknown"
+        ]);
+        let mut results = trie.starts_with(input);
+        results.sort();
+        assert_eq!(results.join(", "), output);
+    }
+
+    use rstest::*;
 }
