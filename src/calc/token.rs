@@ -124,7 +124,9 @@ impl Display for Token {
 
 #[cfg(test)]
 mod tests {
-    use itertools::Itertools;
+    use itertools::join;
+    use rstest::*;
+
     use super::*;
 
     #[test]
@@ -147,10 +149,14 @@ mod tests {
         assert_eq!(Token::new("1.2"), Token::Number(1.2));
     }
 
-    #[test]
-    fn should_shunting_yard() {
-        let tokens = Token::shunting_yard("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3");
-        let str = format!("{}", tokens.iter().map(|t| t.to_string()).join(" "));
-        assert_eq!(str, "3 4 2 * 1 5 - 2 3 ^ ^ / +".to_string());
+    #[rstest]
+    #[case(
+        "3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3",
+        "3 4 2 * 1 5 - 2 3 ^ ^ / +"
+    )]
+    fn should_shunting_yard(#[case] input: &str, #[case] output: &str) {
+        let tokens = Token::shunting_yard(input);
+        let result = join(tokens, " ");
+        assert_eq!(result, output);
     }
 }

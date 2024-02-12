@@ -1,6 +1,8 @@
 use std::collections::VecDeque;
 use std::fmt::{Debug, Display, Formatter};
+
 use itertools::join;
+
 use super::expr::Expr;
 use super::token::Token;
 
@@ -97,8 +99,9 @@ impl Calc {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use rstest::*;
+
+    use super::*;
 
     #[rstest]
     #[case("2",      2.0)]

@@ -52,7 +52,10 @@ impl Trie {
 
 #[cfg(test)]
 mod tests {
+    use rstest::*;
+
     use super::*;
+
     #[rstest]
     #[case("te", "test")]
     #[case("und", "undo")]
@@ -65,6 +68,4 @@ mod tests {
         results.sort();
         assert_eq!(results.join(", "), output);
     }
-
-    use rstest::*;
 }

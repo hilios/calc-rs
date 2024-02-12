@@ -1,5 +1,7 @@
 #[macro_use] extern crate rocket;
-use rocket::tokio::time::{sleep, Duration};
+
+use rocket::tokio::time::{Duration, sleep};
+
 mod trie;
 mod calc;
 
