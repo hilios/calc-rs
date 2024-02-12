@@ -109,6 +109,7 @@ mod tests {
     #[case("2 2 -",  0.0)]
     #[case("2 2 *",  4.0)]
     #[case("2 2 /",  1.0)]
+    #[case("2 3 ^",  8.0)]
     #[case("4 sqrt", 2.0)]
     fn should_parse_postfix(#[case] input: &str, #[case] output: f64) {
         let mut calc= Calc::postfix(input).unwrap();
@@ -153,6 +154,8 @@ mod tests {
     #[case("3 *",   "Missing operand")]
     #[case("/",     "Missing operands")]
     #[case("4 /",   "Missing operand")]
+    #[case("^",     "Missing operands")]
+    #[case("4 ^",   "Missing operand")]
     #[case("sqrt",  "Missing operand")]
     #[case("undo",  "Nothing to undo")]
     fn should_error(#[case] input: &str, #[case] error: &str) {

@@ -150,13 +150,20 @@ mod tests {
     }
 
     #[rstest]
+    #[case("2",      "2")]
+    #[case("2 + 2",  "2 2 +")]
+    #[case("2 - 2",  "2 2 -")]
+    #[case("2 * 2",  "2 2 *")]
+    #[case("2 / 2",  "2 2 /")]
+    #[case("2 ^ 2",  "2 2 ^")]
+    #[case("sqrt 4", "4 sqrt")]
     #[case(
         "3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3",
         "3 4 2 * 1 5 - 2 3 ^ ^ / +"
     )]
-    fn should_shunting_yard(#[case] input: &str, #[case] output: &str) {
-        let tokens = Token::shunting_yard(input);
+    fn should_shunting_yard(#[case] infix: &str, #[case] postfix: &str) {
+        let tokens = Token::shunting_yard(infix);
         let result = join(tokens, " ");
-        assert_eq!(result, output);
+        assert_eq!(result, postfix);
     }
 }
