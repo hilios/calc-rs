@@ -1,6 +1,3 @@
-extern crate yew;
-extern crate log;
-
 use yew::prelude::*;
 use log::info;
 

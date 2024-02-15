@@ -108,7 +108,6 @@ dependencies = [
  "itertools",
  "rstest",
  "serde",
- "serde_json",
 ]
 
 [[package]]

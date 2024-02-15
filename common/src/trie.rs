@@ -52,6 +52,8 @@ impl Trie {
 
 #[cfg(test)]
 mod tests {
+    extern crate rstest;
+
     use rstest::*;
 
     use super::*;
