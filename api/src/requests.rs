@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use rocket::serde::json::Json;
-use crate::calc::Calc;
+use shared::calc::Calc;
 
 #[derive(Serialize, Deserialize)]
 pub struct CalcRequest<'r> {

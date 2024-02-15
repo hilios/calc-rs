@@ -1,5 +1,7 @@
 #[macro_use] extern crate rocket;
 
+mod requests;
+
 use requests::{get as get_calc, post as post_calc};
 
 #[get("/")]

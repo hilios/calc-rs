@@ -1,0 +1,12 @@
+[package]
+name = "web"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+shared = { path = "../shared" }
+log.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+yew = { git = "https://github.com/yewstack/yew/", features = ["csr"] }
+wasm-logger = "0.2.0"
