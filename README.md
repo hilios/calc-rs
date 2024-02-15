@@ -1,1 +1,5 @@
 # calc-rs
+
+```
+trunk serve
+```
