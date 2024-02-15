@@ -1,4 +1,4 @@
-/target
-/dist
-/.idea
-/.vscode
+target/
+dist/
+.idea/
+.vscode/
