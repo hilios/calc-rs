@@ -2,18 +2,29 @@ pub mod expr;
 pub mod token;
 
 use std::fmt::{Debug, Display, Formatter};
+use serde::{Deserialize, Serialize};
 
 use itertools::join;
 use crate::calc::expr::Expr;
 use crate::calc::token::Token;
 
-#[derive(Debug)]
-pub(crate) struct Calc {
-    pub memory: Vec<Expr>
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Calc {
+    memory: Vec<Expr>,
+    format: Format,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum Format {
+    POSTFIX = 1, INFIX = 2
 }
 
 impl Display for Calc {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self.format {
+            Format::POSTFIX => {}
+            Format::INFIX => {}
+        }
         f.write_str(&*join(self.memory.clone(), " "))
     }
 }
@@ -22,7 +33,7 @@ impl Calc {
 
     pub fn postfix(input: &str) -> Result<Calc, String> {
         let memory = Vec::with_capacity(100);
-        let mut calc = Calc { memory };
+        let mut calc = Calc { memory, format: Format::POSTFIX };
         for token in input.split_ascii_whitespace() {
             let token = Token::new(token);
             calc.parse_token(token)?;
@@ -34,7 +45,7 @@ impl Calc {
     pub fn infix(input: &str) -> Result<Calc, String> {
         let output = Token::shunting_yard(input);
         let memory = Vec::with_capacity(100);
-        let mut calc = Calc { memory };
+        let mut calc = Calc { memory, format: Format::INFIX };
         for token in output {
             calc.parse_token(token)?;
         }
