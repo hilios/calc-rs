@@ -11,13 +11,13 @@ impl Trie {
         for word in words {
             trie.insert(word)
         }
-        return trie
+        trie
     }
 
     pub fn empty() -> Self {
         Trie {
             children: HashMap::new(),
-            value: None
+            value: None,
         }
     }
 
@@ -35,17 +35,19 @@ impl Trie {
         for char in prefix.chars() {
             match child.children.get(&char) {
                 Some(n) => child = n,
-                None => return results
+                None => return results,
             }
         }
-        self.collect(child, &mut results);
+        child.collect(&mut results);
         results
     }
 
-    fn collect<'a>(&self, root: &'a Trie, results: &mut Vec<String>) {
-        root.value.clone().map(|v| results.push(v));
-        for (_, child) in &root.children {
-            self.collect(&child, results)
+    fn collect(&self, results: &mut Vec<String>) {
+        if let Some(v) = self.value.clone() {
+            results.push(v)
+        }
+        for child in self.children.values() {
+            child.collect(results)
         }
     }
 }
@@ -65,9 +67,7 @@ mod tests {
     #[case("ok", "ok")]
     #[case("okay", "")]
     fn should_search(#[case] input: &str, #[case] output: &str) {
-        let trie = Trie::new(vec![
-            "test", "undo", "unknown", "ok"
-        ]);
+        let trie = Trie::new(vec!["test", "undo", "unknown", "ok"]);
         let mut results = trie.starts_with(input);
         results.sort();
         assert_eq!(results.join(", "), output);
