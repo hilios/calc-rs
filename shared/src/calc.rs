@@ -8,7 +8,7 @@ use crate::calc::expr::Expr;
 use crate::calc::token::Token;
 use itertools::join;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Calc {
     memory: Vec<Expr>,
 }
@@ -19,20 +19,15 @@ pub enum Format<'a> {
 }
 
 impl Calc {
-    pub fn empty() -> Calc {
-        Calc {
-            memory: Vec::with_capacity(100),
-        }
-    }
 
     pub fn postfix(input: &str) -> Result<Calc, String> {
-        let mut calc = Calc::empty();
+        let mut calc = Calc::default();
         calc.input(Format::Postfix(input))?;
         Ok(calc)
     }
 
     pub fn infix(input: &str) -> Result<Calc, String> {
-        let mut calc = Calc::empty();
+        let mut calc = Calc::default();
         calc.input(Format::Infix(input))?;
         Ok(calc)
     }
@@ -122,6 +117,14 @@ impl Display for Calc {
 impl PartialEq for Calc {
     fn eq(&self, other: &Self) -> bool {
         self.eval() == other.eval()
+    }
+}
+
+impl Default for Calc {
+    fn default() -> Self {
+        Calc {
+            memory: Vec::with_capacity(100)
+        }
     }
 }
 
