@@ -8,13 +8,13 @@ use yew::prelude::*;
 fn App() -> Html {
     html! {
         <div class="container-md">
-            <header class="row  px-5">
-                <div class="col gy-3">
+            <header class="row  px-4">
+                <div class="col gy-4">
                     <h1><i class="bi bi-calculator"></i> { "Calculator" }</h1>
                 </div>
             </header>
-            <main class="row px-5 justify-content-center">
-                <div class="col gy-3">
+            <main class="row px-4 justify-content-center">
+                <div class="col gy-2">
                     <CalculatorComponent />
                 </div>
             </main>

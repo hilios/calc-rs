@@ -5,15 +5,17 @@ use wasm_bindgen::JsCast;
 use web_sys::{HtmlInputElement, HtmlSelectElement};
 use yew::prelude::*;
 
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone)]
 pub struct InputData {
     pub input: String,
-    pub postfix: bool,
+    pub infix: bool,
 }
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub onsubmit: Callback<InputData>
+    #[prop_or_default]
+    pub error: Option<String>,
+    pub onsubmit: Callback<InputData>,
 }
 
 #[function_component]
@@ -40,7 +42,7 @@ pub fn InputForm(props: &Props) -> Html {
             let input = e.target().and_then(|t| t.dyn_into::<HtmlSelectElement>().ok());
             if let Some(input) = input {
                 let mut data = state.deref().clone();
-                data.postfix = input.value() == "true";
+                data.infix = input.value() == "true";
                 state.set(data);
             } else {
                 error!("Couldn't find select element");
@@ -63,18 +65,25 @@ pub fn InputForm(props: &Props) -> Html {
     };
 
     html! {
-        <form class="row" {onsubmit}>
+        <form class="row py-2" {onsubmit}>
             <div class="col-8">
                 <div class="form-floating">
-                    <input id="input" class="form-control" value={ state.input.clone() } onchange={input_onchange} />
+                    <input id="input"
+                        class={classes!("form-control", props.error.clone().map(|_| "is-invalid"))}
+                        value={ state.input.clone() } onchange={input_onchange} />
                     <label for="input" class="form-label">{ "Input" }</label>
+                    if let Some(message) = props.error.clone() {
+                        <div class="invalid-feedback">
+                            { message }
+                        </div>
+                    }
                 </div>
             </div>
             <div class="col">
                 <div class="form-floating">
                     <select class="form-select" id="format" onchange={format_onchange}>
-                        <option value="true"  selected={ state.postfix }>{ "RPN" }</option>
-                        <option value="false" selected={ state.postfix.not() }>{ "Natural" }</option>
+                        <option value="false" selected={ state.infix.not() }>{ "RPN" }</option>
+                        <option value="true"  selected={ state.infix }>{ "Natural" }</option>
                     </select>
                     <label for="format" class="form-label">{ "Format" }</label>
                 </div>
