@@ -1,5 +1,5 @@
 [workspace]
-members = ["shared", "web", "api"]
+members = ["shared", "web", "web2", "api"]
 resolver = "2"
 
 [workspace.package]

@@ -1,0 +1,12 @@
+[package]
+name = "web-lp"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+shared = { path = "../shared" }
+log.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+wasm-logger = "0.2.0"
+leptos = { version = "0.6.5", features = ["csr"] }
