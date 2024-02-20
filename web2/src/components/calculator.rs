@@ -50,6 +50,10 @@ pub fn CalculatorComponent() -> impl IntoView {
     });
 
     let input_element_ref: NodeRef<html::Input> = create_node_ref();
+    input_element_ref.get().and_then(|el| {
+        el.autofocus();
+        el.focus().ok()
+    });
 
     let on_submit = move |e: ev::SubmitEvent| {
         e.prevent_default();
@@ -86,7 +90,7 @@ pub fn CalculatorComponent() -> impl IntoView {
         });
         // Reset
         input_element.set_value("");
-        input_element.autofocus();
+        input_element.focus().ok();
     };
 
     let on_click = move |e: ev::MouseEvent| {
@@ -100,8 +104,10 @@ pub fn CalculatorComponent() -> impl IntoView {
         "Infix"
     };
 
+    let is_invalid = move || state.with(|s| s.error.is_some());
+
     view! {
-        <div id="calculator" class="row d-flex justify-content-center mh-100">
+        <div id="calculator" class="row d-flex justify-content-center">
             <div class="col-md-8 col-lg-6 col-xl-4">
                 <div class="card rounded shadow">
                     <header class="card-header d-flex justify-content-between align-items-center p-3 bg-black text-white rounded-top">
@@ -115,27 +121,24 @@ pub fn CalculatorComponent() -> impl IntoView {
                                 }
                             }).collect_view() }
                         </div>
-
                         <form on:submit=on_submit>
-                            <div class="mb-3">
-                                <label class="form-label">Input</label>
-                                <input class="form-control" class:is-invalid=move || { state.get().error.is_some() }
-                                    node_ref=input_element_ref />
-                                {move || if state.with(|s| s.error.is_some()) {
+                            <input class="form-control" class:is-invalid=is_invalid
+                                node_ref=input_element_ref />
+                            <div class="row form-text">
+                                {move || if is_invalid() {
                                     view! {
                                         <div class="invalid-feedback">{ state.get().error.unwrap() }</div>
                                     }.into_any()
                                 } else {
                                     view! {
-                                        <div class="form-text">
-                                            <p class="text-right">
-                                                <a href="#" on:click=on_click>
-                                                    <i class="bi bi-gear me-1"></i> { format }
-                                                </a>
-                                            </p>
-                                        </div>
+                                        <div class="col">(Press enter)</div>
                                     }.into_any()
                                 }}
+                                <div class="col text-end">
+                                    <a href="#" on:click=on_click>
+                                        <i class="bi bi-gear me-1"></i> { format }
+                                    </a>
+                                </div>
                             </div>
                         </form>
                     </div>
