@@ -1,5 +1,5 @@
+use std::ops::Not;
 use leptos::*;
-use leptos::html::S;
 
 use log::{info, error};
 use shared::calc::{Calc, Format};
@@ -19,7 +19,7 @@ struct State {
 }
 
 #[component]
-pub fn MessageComponent(message: Message) -> impl IntoView {
+fn MessageItem(message: Message) -> impl IntoView {
     match message {
         Message::Output(value) => view! {
             <div class="d-flex flex-row justify-content-start mb-4">
@@ -57,7 +57,14 @@ pub fn CalculatorComponent() -> impl IntoView {
         let value = input_element.value();
         state_writer.update(|state| {
             let mut next = state.calc.clone();
-            match next.input(Format::Postfix(value.as_str())) {
+            let format = if state.postfix {
+                info!("Using postfix");
+                Format::Postfix(value.as_str())
+            } else {
+                info!("Using infix");
+                Format::Infix(value.as_str())
+            };
+            match next.input(format) {
                 Ok(_) => {
                     let eval = next
                         .eval()
@@ -82,19 +89,32 @@ pub fn CalculatorComponent() -> impl IntoView {
         input_element.autofocus();
     };
 
+    let on_click = move |e: ev::MouseEvent| {
+        e.prevent_default();
+        state_writer.update(|state| state.postfix = state.postfix.not());
+    };
+
+    let format = move || if state.with(|s| s.postfix) {
+        "Postfix"
+    } else {
+        "Infix"
+    };
+
     view! {
-        <div id="calculator" class="row d-flex justify-content-center">
+        <div id="calculator" class="row d-flex justify-content-center mh-100">
             <div class="col-md-8 col-lg-6 col-xl-4">
                 <div class="card rounded shadow">
-                    <div class="card-header d-flex justify-content-between align-items-center p-3 bg-black text-white rounded-top">
+                    <header class="card-header d-flex justify-content-between align-items-center p-3 bg-black text-white rounded-top">
                         <p class="mb-0 fw-bold">Calculator</p>
-                    </div>
-                    <div class="card-body">
-                        {move || state.get().history.iter().map(|message| {
-                            view! {
-                                <MessageComponent message=message.clone() />
-                            }
-                        }).collect_view() }
+                    </header>
+                    <div class="card-body h-100">
+                        <div class="overflow-y-auto">
+                            {move || state.get().history.iter().map(|message| {
+                                view! {
+                                    <MessageItem message=message.clone() />
+                                }
+                            }).collect_view() }
+                        </div>
 
                         <form on:submit=on_submit>
                             <div class="mb-3">
@@ -107,7 +127,13 @@ pub fn CalculatorComponent() -> impl IntoView {
                                     }.into_any()
                                 } else {
                                     view! {
-                                        <div class="form-text">Use Postfix notation</div>
+                                        <div class="form-text">
+                                            <p class="text-right">
+                                                <a href="#" on:click=on_click>
+                                                    <i class="bi bi-gear me-1"></i> { format }
+                                                </a>
+                                            </p>
+                                        </div>
                                     }.into_any()
                                 }}
                             </div>
