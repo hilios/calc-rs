@@ -1,29 +1,32 @@
-mod calculator;
-mod counter;
+use leptos::*;
 
-use calculator::CalculatorComponent;
-use yew::prelude::*;
+mod components;
 
-#[function_component]
-fn App() -> Html {
-    html! {
-        <div class="container-md">
-            <header class="row  px-4">
-                <div class="col gy-4">
-                    <h1><i class="bi bi-calculator"></i> { "Calculator" }</h1>
-                </div>
-            </header>
-            <main class="row px-4 justify-content-center">
-                <div class="col gy-2">
-                    <CalculatorComponent />
-                </div>
-            </main>
-        </div>
+use components::calculator::CalculatorComponent;
+
+#[component]
+fn App() -> impl IntoView {
+    let (count, set_count) = create_signal(0);
+
+    let on_click = move |_| {
+        set_count.update(|n| *n += 1);
+    };
+
+    view! {
+        <button class="btn btn-primary" on:click=on_click>
+            "Click me: "
+            { count }
+        </button>
     }
 }
 
 fn main() {
     wasm_logger::init(wasm_logger::Config::default());
-    yew::set_event_bubbling(false);
-    yew::Renderer::<App>::new().render();
+    mount_to_body(|| {
+        view! {
+            <div class="container py-5 min-vh-100 mh-100">
+                <CalculatorComponent />
+            </div>
+        }
+    })
 }
