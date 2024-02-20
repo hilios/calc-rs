@@ -18,3 +18,19 @@ jobs:
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
+    - name: Build web release
+      run: trunk build --release
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_REGISTRY_TOKEN }}
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v6
+      with:
+        directory: web
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository }}:${{ github.ref }}
+          ghcr.io/${{ github.repository }}:latest

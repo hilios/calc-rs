@@ -1,6 +1,6 @@
 FROM rust:alpine3.18 as builder
 WORKDIR app
-COPY . .
+COPY .. .
 RUN cargo build --release --bin calc-rs
 
 FROM rust:alpine3.18 as runtime

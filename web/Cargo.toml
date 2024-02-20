@@ -10,3 +10,12 @@ serde.workspace = true
 serde_json.workspace = true
 wasm-logger = "0.2.0"
 leptos = { version = "0.6.5", features = ["csr"] }
+
+[profile.wasm-release]
+inherits = "release"
+opt-level = 'z'
+lto = true
+codegen-units = 1
+
+[package.metadata.leptos]
+lib-profile-release = "wasm-release"
