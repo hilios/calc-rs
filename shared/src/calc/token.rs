@@ -1,5 +1,6 @@
 use std::collections::VecDeque;
 use std::fmt::{Display, Formatter};
+use regex::Regex;
 
 #[derive(Debug, PartialEq)]
 pub enum Token {
@@ -42,8 +43,8 @@ impl Token {
     pub fn shunting_yard(input: &str) -> Vec<Token> {
         let mut operators: VecDeque<Token> = VecDeque::new();
         let mut output = Vec::new();
-
-        for token in input.split_ascii_whitespace().map(|t| Token::new(t)) {
+        let tokens = Regex::new(r"[0-9]+|[a-zA-Z]+|[^\s\t\n]").expect("Invalid regex");
+        for token in tokens.find_iter(input).map(|m| Token::new(m.as_str())) {
             match token {
                 // groups
                 Token::GroupOpen => {
@@ -156,6 +157,11 @@ mod tests {
     #[case("2 * 2",  "2 2 *")]
     #[case("2 / 2",  "2 2 /")]
     #[case("2 ^ 2",  "2 2 ^")]
+    #[case("2+2",  "2 2 +")]
+    #[case("2-2",  "2 2 -")]
+    #[case("2*2",  "2 2 *")]
+    #[case("2/2",  "2 2 /")]
+    #[case("2^2",  "2 2 ^")]
     #[case("sqrt 4", "4 sqrt")]
     #[case(
         "3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3",
