@@ -54,6 +54,10 @@ impl Calc {
         self.memory.iter().map(|e| e.eval()).collect()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.memory.is_empty()
+    }
+
     fn parse_token(&mut self, token: Token) -> Result<(), String> {
         match token {
             Token::Plus => {
@@ -101,8 +105,14 @@ impl Calc {
                 let e = Expr::Number(n);
                 self.memory.push(e);
             }
+            Token::Clear => {
+                self.memory.clear();
+            }
+            Token::Pop => {
+                self.memory.pop();
+            }
             Token::Unknown(t) => return Err(format!("Unknown token: {}", t)),
-            _ => {}
+            Token::GroupOpen | Token::GroupClose => {}
         };
         Ok(())
     }
@@ -170,6 +180,29 @@ mod tests {
     #[case("4 sqrt", "4")]
     fn should_undo(#[case] input: &str, #[case] output: &str) {
         let undo = format!("{} undo", input);
+        let result = Calc::postfix(undo.as_str()).unwrap();
+        assert_eq!(result.to_string(), output);
+    }
+
+    #[rstest]
+    #[case("2")]
+    #[case("2 2 +")]
+    #[case("2 2 -")]
+    #[case("2 2 *")]
+    #[case("2 2 /")]
+    #[case("4 sqrt")]
+    fn should_clear(#[case] input: &str) {
+        let undo = format!("{} clear", input);
+        let result = Calc::postfix(undo.as_str()).unwrap();
+        assert!(result.is_empty());
+    }
+
+    #[rstest]
+    #[case("2",     "")]
+    #[case("2 4",   "2")]
+    #[case("2 4 +", "")]
+    fn should_pop(#[case] input: &str, #[case] output: &str) {
+        let undo = format!("{} rm", input);
         let result = Calc::postfix(undo.as_str()).unwrap();
         assert_eq!(result.to_string(), output);
     }

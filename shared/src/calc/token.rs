@@ -10,10 +10,12 @@ pub enum Token {
     Slash,
     Star,
     Sqrt,
-    Undo,
     Caret,
     GroupOpen,
     GroupClose,
+    Undo,
+    Pop,
+    Clear,
     Unknown(String)
 }
 
@@ -28,8 +30,10 @@ impl Token {
             "*" | "×" => Token::Star,
             "^" => Token::Caret,
             // Functions
-            "sqrt" => Token::Sqrt,
-            "undo" => Token::Undo,
+            "sqrt"  => Token::Sqrt,
+            "undo"  => Token::Undo,
+            "rm"    => Token::Pop,
+            "clear" => Token::Clear,
             // Grouping
             "(" => Token::GroupOpen,
             ")" => Token::GroupClose,
@@ -92,7 +96,7 @@ impl Token {
     /// https://en.wikipedia.org/wiki/Order_of_operations
     pub fn order(&self) -> i8 {
         match self {
-            Token::Number(_) | Token::Unknown(_) | Token::Undo => 0,
+            Token::Number(_) | Token::Unknown(_) | Token::Undo | Token::Pop | Token::Clear => 0,
             // addition and subtraction
             Token::Plus | Token::Minus => 1,
             // multiplication and division
@@ -115,9 +119,11 @@ impl Display for Token {
             Token::Star => write!(f, "*"),
             Token::Caret => write!(f, "^"),
             Token::Sqrt => write!(f, "sqrt"),
-            Token::Undo => write!(f, ""),
-            Token::GroupOpen => write!(f, ""),
-            Token::GroupClose => write!(f, ""),
+            Token::GroupOpen => write!(f, "("),
+            Token::GroupClose => write!(f, ")"),
+            Token::Undo |
+            Token::Pop |
+            Token::Clear  => write!(f, ""),
             Token::Unknown(u) => write!(f, "{}", u),
         }
     }
@@ -157,16 +163,19 @@ mod tests {
     #[case("2 * 2",  "2 2 *")]
     #[case("2 / 2",  "2 2 /")]
     #[case("2 ^ 2",  "2 2 ^")]
-    #[case("2+2",  "2 2 +")]
-    #[case("2-2",  "2 2 -")]
-    #[case("2*2",  "2 2 *")]
-    #[case("2/2",  "2 2 /")]
-    #[case("2^2",  "2 2 ^")]
+    #[case("2 * (3 + 5)", "2 3 5 + *")]
     #[case("sqrt 4", "4 sqrt")]
     #[case(
         "3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3",
         "3 4 2 * 1 5 - 2 3 ^ ^ / +"
     )]
+    // No spaces syntax
+    #[case("2+2",  "2 2 +")]
+    #[case("2-2",  "2 2 -")]
+    #[case("2*2",  "2 2 *")]
+    #[case("2/2",  "2 2 /")]
+    #[case("2^2",  "2 2 ^")]
+    #[case("3+4 * 2 / (1-5)^2^3", "3 4 2 * 1 5 - 2 3 ^ ^ / +")]
     fn should_shunting_yard(#[case] infix: &str, #[case] postfix: &str) {
         let tokens = Token::shunting_yard(infix);
         let result = join(tokens, " ");
