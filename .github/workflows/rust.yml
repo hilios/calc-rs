@@ -20,7 +20,8 @@ jobs:
       run: cargo test --verbose
     - name: Build web release
       run: |
-        cargo binstall trunk
+        curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+        cargo binstall --no-confirm trunk
         trunk build --release
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1
