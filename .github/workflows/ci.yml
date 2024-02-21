@@ -41,7 +41,7 @@ jobs:
     - name: Build and Push Docker Image
       uses: docker/build-push-action@v5
       with:
-        directory: web
+        context: "{{defaultContext}}:web"
         push: true
         tags: |
           ghcr.io/${{ github.repository }}:${{ github.sha }}
