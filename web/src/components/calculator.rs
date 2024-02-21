@@ -50,15 +50,21 @@ pub fn CalculatorComponent() -> impl IntoView {
     });
 
     let input_element_ref: NodeRef<html::Input> = create_node_ref();
-    input_element_ref.get().and_then(|el| {
-        el.autofocus();
-        el.focus().ok()
+
+    create_effect(move |_| {
+        input_element_ref.get_untracked().and_then(|el| {
+            el.autofocus();
+            el.focus().ok()
+        });
     });
 
     let on_submit = move |e: ev::SubmitEvent| {
         e.prevent_default();
         let input_element = input_element_ref.get().expect("input value is missing");
         let value = input_element.value();
+
+        if value.is_empty() { return };
+
         state_writer.update(|state| {
             let mut next = state.calc.clone();
             let format = if state.postfix {
@@ -83,7 +89,7 @@ pub fn CalculatorComponent() -> impl IntoView {
                     state.calc = next;
                 },
                 Err(e) => {
-                    error!("Invalid input: {}", e);
+                    error!("{}", e);
                     state.error = Some(e)
                 }
             }
@@ -94,7 +100,6 @@ pub fn CalculatorComponent() -> impl IntoView {
     };
 
     let on_click = move |e: ev::MouseEvent| {
-        e.prevent_default();
         state_writer.update(|state| state.postfix = state.postfix.not());
     };
 
@@ -122,22 +127,21 @@ pub fn CalculatorComponent() -> impl IntoView {
                             }).collect_view() }
                         </div>
                         <form on:submit=on_submit>
-                            <input class="form-control" class:is-invalid=is_invalid
-                                node_ref=input_element_ref />
-                            <div class="row form-text">
-                                {move || if is_invalid() {
-                                    view! {
-                                        <div class="invalid-feedback">{ state.get().error.unwrap() }</div>
-                                    }.into_any()
-                                } else {
-                                    view! {
-                                        <div class="col">(Press enter)</div>
-                                    }.into_any()
-                                }}
-                                <div class="col text-end">
-                                    <a href="#" on:click=on_click>
-                                        <i class="bi bi-gear me-1"></i> { format }
-                                    </a>
+                            <div class="position-relative">
+                                <input class="form-control" class:is-invalid=is_invalid
+                                    node_ref=input_element_ref />
+                                <Show when=is_invalid>
+                                    <div class="invalid-feedback">{ move || state.with(|s| s.error.clone()) }</div>
+                                </Show>
+                                <div class="row form-text">
+                                    <div class="col">(Press enter)</div>
+                                    <div class="col text-end">
+                                        <div class="form-check form-switch form-check-reverse">
+                                            <label class="form-check-label">{ format }</label>
+                                            <input class="form-check-input" type="checkbox" role="switch"
+                                                checked=move || state.with(|s| s.postfix) on:click=on_click />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </form>
