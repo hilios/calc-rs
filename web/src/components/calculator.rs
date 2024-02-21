@@ -99,7 +99,7 @@ pub fn CalculatorComponent() -> impl IntoView {
         input_element.focus().ok();
     };
 
-    let on_click = move |e: ev::MouseEvent| {
+    let on_click = move |_| {
         state_writer.update(|state| state.postfix = state.postfix.not());
     };
 

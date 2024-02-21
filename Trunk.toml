@@ -1,3 +1,4 @@
 [build]
 # The index HTML file to drive the bundling process.
 target = "web/index.html"
+dist = "web/target"

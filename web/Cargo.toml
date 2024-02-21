@@ -1,5 +1,5 @@
 [package]
-name = "web-lp"
+name = "web"
 version.workspace = true
 edition.workspace = true
 
