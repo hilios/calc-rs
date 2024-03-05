@@ -1,7 +1,7 @@
-use std::ops::Not;
 use leptos::*;
+use std::ops::Not;
 
-use log::{info, error};
+use log::{error, info};
 use shared::calc::{Calc, Format};
 
 #[derive(Clone)]
@@ -15,7 +15,7 @@ struct State {
     calc: Calc,
     error: Option<String>,
     history: Vec<Message>,
-    postfix: bool
+    postfix: bool,
 }
 
 #[component]
@@ -27,17 +27,17 @@ fn MessageItem(message: Message) -> impl IntoView {
                     <p class="small mb-0">{ value }</p>
                 </div>
             </div>
-        }.into_view(),
+        }
+        .into_view(),
         Message::Input(value) => view! {
             <div class="d-flex flex-row justify-content-end mb-4">
                 <div class="p-3 me-3 border rounded-pill bg-light text-light-emphasis">
                     <p class="small mb-0">{ value }</p>
                 </div>
             </div>
-        }.into_view()
+        }
+        .into_view(),
     }
-
-
 }
 
 #[component]
@@ -87,7 +87,7 @@ pub fn CalculatorComponent() -> impl IntoView {
                     state.history.push(Message::Output(eval));
                     state.error = None;
                     state.calc = next;
-                },
+                }
                 Err(e) => {
                     error!("{}", e);
                     state.error = Some(e)
@@ -103,10 +103,12 @@ pub fn CalculatorComponent() -> impl IntoView {
         state_writer.update(|state| state.postfix = state.postfix.not());
     };
 
-    let format = move || if state.with(|s| s.postfix) {
-        "Postfix"
-    } else {
-        "Infix"
+    let format = move || {
+        if state.with(|s| s.postfix) {
+            "Postfix"
+        } else {
+            "Infix"
+        }
     };
 
     let is_invalid = move || state.with(|s| s.error.is_some());

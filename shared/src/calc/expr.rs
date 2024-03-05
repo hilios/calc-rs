@@ -18,30 +18,23 @@ pub enum Expr {
 impl Expr {
     pub fn eval(&self) -> f64 {
         match self {
-            Expr::Number(value) =>
-                *value,
-            Expr::Add(x, y) =>
-                x.eval() + y.eval(),
-            Expr::Subtract(x, y) =>
-                x.eval() - y.eval(),
-            Expr::Divide(x, y) =>
-                x.eval() / y.eval(),
-            Expr::Multiply(x, y) =>
-                x.eval() * y.eval(),
-            Expr::Sqrt(x) =>
-                x.eval().sqrt(),
-            Expr::Power(x, y) =>
-                x.eval().powf(y.eval()),
+            Expr::Number(value) => *value,
+            Expr::Add(x, y) => x.eval() + y.eval(),
+            Expr::Subtract(x, y) => x.eval() - y.eval(),
+            Expr::Divide(x, y) => x.eval() / y.eval(),
+            Expr::Multiply(x, y) => x.eval() * y.eval(),
+            Expr::Sqrt(x) => x.eval().sqrt(),
+            Expr::Power(x, y) => x.eval().powf(y.eval()),
         }
     }
 
     pub fn undo(&self) -> VecDeque<&Expr> {
         match self {
-            Expr::Add(x, y) |
-            Expr::Subtract(x, y) |
-            Expr::Divide(x, y) |
-            Expr::Multiply(x, y) |
-            Expr::Power(x, y) => {
+            Expr::Add(x, y)
+            | Expr::Subtract(x, y)
+            | Expr::Divide(x, y)
+            | Expr::Multiply(x, y)
+            | Expr::Power(x, y) => {
                 let mut q = VecDeque::with_capacity(2);
                 q.push_back(x.as_ref());
                 q.push_back(y.as_ref());
@@ -52,7 +45,7 @@ impl Expr {
                 q.push_back(x.as_ref());
                 q
             }
-            _ => VecDeque::with_capacity(0)
+            _ => VecDeque::with_capacity(0),
         }
     }
 }
@@ -158,7 +151,7 @@ mod tests {
     #[test]
     fn undo_divide() {
         let expr = Divide(Box::from(Number(2.0)), Box::from(Number(2.0)));
-        let mut  undo = expr.undo();
+        let mut undo = expr.undo();
         let x = undo.pop_front().unwrap();
         let y = undo.pop_front().unwrap();
         assert_eq!(x.eval(), 2.0);
@@ -168,7 +161,7 @@ mod tests {
     #[test]
     fn undo_power() {
         let expr = Power(Box::from(Number(2.0)), Box::from(Number(2.0)));
-        let mut  undo = expr.undo();
+        let mut undo = expr.undo();
         let x = undo.pop_front().unwrap();
         let y = undo.pop_front().unwrap();
         assert_eq!(x.eval(), 2.0);

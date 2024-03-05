@@ -19,7 +19,6 @@ pub enum Format<'a> {
 }
 
 impl Calc {
-
     pub fn postfix(input: &str) -> Result<Calc, String> {
         let mut calc = Calc::default();
         calc.input(Format::Postfix(input))?;
@@ -133,7 +132,7 @@ impl PartialEq for Calc {
 impl Default for Calc {
     fn default() -> Self {
         Calc {
-            memory: Vec::with_capacity(100)
+            memory: Vec::with_capacity(100),
         }
     }
 }

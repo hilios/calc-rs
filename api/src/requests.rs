@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use rocket::serde::json::Json;
+use serde::{Deserialize, Serialize};
 use shared::calc::Calc;
 
 #[derive(Serialize, Deserialize)]
@@ -19,7 +19,8 @@ pub fn get(request: Json<CalcRequest<'_>>) -> Json<Calc> {
         Calc::infix(request.input)
     } else {
         Calc::postfix(request.input)
-    }.unwrap();
+    }
+    .unwrap();
     Json(calc)
 }
 
@@ -29,6 +30,9 @@ pub fn post(request: Json<CalcRequest<'_>>) -> Json<CalcResponse> {
         Calc::infix(request.input)
     } else {
         Calc::postfix(request.input)
-    }.unwrap();
-    Json(CalcResponse { output: calc.to_string() })
+    }
+    .unwrap();
+    Json(CalcResponse {
+        output: calc.to_string(),
+    })
 }

@@ -16,11 +16,10 @@ pub enum Token {
     Undo,
     Pop,
     Clear,
-    Unknown(String)
+    Unknown(String),
 }
 
 impl Token {
-
     pub fn new(token: &str) -> Token {
         match token {
             // Operations
@@ -37,10 +36,10 @@ impl Token {
             // Grouping
             "(" => Token::GroupOpen,
             ")" => Token::GroupClose,
-            other =>
-                other.parse::<f64>()
-                    .map(|n| Token::Number(n))
-                    .unwrap_or(Token::Unknown(String::from(other)))
+            other => other
+                .parse::<f64>()
+                .map(|n| Token::Number(n))
+                .unwrap_or(Token::Unknown(String::from(other))),
         }
     }
 
@@ -51,36 +50,38 @@ impl Token {
         for token in tokens.find_iter(input).map(|m| Token::new(m.as_str())) {
             match token {
                 // groups
-                Token::GroupOpen => {
-                    operators.push_front(token)
-                }
+                Token::GroupOpen => operators.push_front(token),
                 Token::GroupClose => {
                     while let Some(op) = operators.pop_front() {
                         if op == Token::GroupOpen {
-                            break
+                            break;
                         } else {
                             output.push(op)
                         }
                     }
                 }
                 // operators
-                Token::Plus | Token::Minus | Token::Slash | Token::Star | Token::Sqrt | Token::Caret => {
+                Token::Plus
+                | Token::Minus
+                | Token::Slash
+                | Token::Star
+                | Token::Sqrt
+                | Token::Caret => {
                     while let Some(last) = operators.get(0) {
-                        if last.order() >= token.order() &&
-                            *last != Token::GroupOpen &&
-                            *last != Token::Caret
+                        if last.order() >= token.order()
+                            && *last != Token::GroupOpen
+                            && *last != Token::Caret
                         {
                             let t = operators.pop_front().unwrap();
                             output.push(t);
                         } else {
-                            break
+                            break;
                         }
                     }
                     operators.push_front(token);
                 }
                 // operands
-                Token::Number(_) | _ =>
-                    output.push(token),
+                Token::Number(_) | _ => output.push(token),
             }
         }
 
@@ -104,7 +105,7 @@ impl Token {
             // exponentiation
             Token::Caret | Token::Sqrt => 4,
             // parenthesis
-            Token::GroupOpen | Token::GroupClose => i8::MAX
+            Token::GroupOpen | Token::GroupClose => i8::MAX,
         }
     }
 }

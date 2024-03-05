@@ -1,4 +1,5 @@
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
 mod requests;
 
@@ -8,7 +9,6 @@ use requests::{get as get_calc, post as post_calc};
 fn index() -> &'static str {
     "Hello, world!"
 }
-
 #[launch]
 fn rocket() -> _ {
     rocket::build()
