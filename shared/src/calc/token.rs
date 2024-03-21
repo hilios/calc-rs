@@ -1,6 +1,6 @@
+use regex::Regex;
 use std::collections::VecDeque;
 use std::fmt::{Display, Formatter};
-use regex::Regex;
 
 #[derive(Debug, PartialEq)]
 pub enum Token {
@@ -29,16 +29,16 @@ impl Token {
             "*" | "×" => Token::Star,
             "^" => Token::Caret,
             // Functions
-            "sqrt"  => Token::Sqrt,
-            "undo"  => Token::Undo,
-            "rm"    => Token::Pop,
+            "sqrt" => Token::Sqrt,
+            "undo" => Token::Undo,
+            "rm" => Token::Pop,
             "clear" => Token::Clear,
             // Grouping
             "(" => Token::GroupOpen,
             ")" => Token::GroupClose,
             other => other
                 .parse::<f64>()
-                .map(|n| Token::Number(n))
+                .map(Token::Number)
                 .unwrap_or(Token::Unknown(String::from(other))),
         }
     }
@@ -67,7 +67,7 @@ impl Token {
                 | Token::Star
                 | Token::Sqrt
                 | Token::Caret => {
-                    while let Some(last) = operators.get(0) {
+                    while let Some(last) = operators.front() {
                         if last.order() >= token.order()
                             && *last != Token::GroupOpen
                             && *last != Token::Caret
@@ -81,7 +81,7 @@ impl Token {
                     operators.push_front(token);
                 }
                 // operands
-                Token::Number(_) | _ => output.push(token),
+                _ => output.push(token),
             }
         }
 
@@ -122,9 +122,7 @@ impl Display for Token {
             Token::Sqrt => write!(f, "sqrt"),
             Token::GroupOpen => write!(f, "("),
             Token::GroupClose => write!(f, ")"),
-            Token::Undo |
-            Token::Pop |
-            Token::Clear  => write!(f, ""),
+            Token::Undo | Token::Pop | Token::Clear => write!(f, ""),
             Token::Unknown(u) => write!(f, "{}", u),
         }
     }
@@ -158,24 +156,21 @@ mod tests {
     }
 
     #[rstest]
-    #[case("2",      "2")]
-    #[case("2 + 2",  "2 2 +")]
-    #[case("2 - 2",  "2 2 -")]
-    #[case("2 * 2",  "2 2 *")]
-    #[case("2 / 2",  "2 2 /")]
-    #[case("2 ^ 2",  "2 2 ^")]
+    #[case("2", "2")]
+    #[case("2 + 2", "2 2 +")]
+    #[case("2 - 2", "2 2 -")]
+    #[case("2 * 2", "2 2 *")]
+    #[case("2 / 2", "2 2 /")]
+    #[case("2 ^ 2", "2 2 ^")]
     #[case("2 * (3 + 5)", "2 3 5 + *")]
     #[case("sqrt 4", "4 sqrt")]
-    #[case(
-        "3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3",
-        "3 4 2 * 1 5 - 2 3 ^ ^ / +"
-    )]
+    #[case("3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3", "3 4 2 * 1 5 - 2 3 ^ ^ / +")]
     // No spaces syntax
-    #[case("2+2",  "2 2 +")]
-    #[case("2-2",  "2 2 -")]
-    #[case("2*2",  "2 2 *")]
-    #[case("2/2",  "2 2 /")]
-    #[case("2^2",  "2 2 ^")]
+    #[case("2+2", "2 2 +")]
+    #[case("2-2", "2 2 -")]
+    #[case("2*2", "2 2 *")]
+    #[case("2/2", "2 2 /")]
+    #[case("2^2", "2 2 ^")]
     #[case("3+4 * 2 / (1-5)^2^3", "3 4 2 * 1 5 - 2 3 ^ ^ / +")]
     fn should_shunting_yard(#[case] infix: &str, #[case] postfix: &str) {
         let tokens = Token::shunting_yard(infix);

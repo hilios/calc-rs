@@ -23,7 +23,7 @@ fn MessageItem(message: Message) -> impl IntoView {
     match message {
         Message::Output(value) => view! {
             <div class="d-flex flex-row justify-content-start mb-4">
-                <div class="p-3 ms-3 rounded-pill bg-primary-subtle text-light-emphasis">
+                <div class="p-3 rounded-pill bg-primary-subtle text-light-emphasis">
                     <p class="small mb-0">{ value }</p>
                 </div>
             </div>
@@ -31,7 +31,7 @@ fn MessageItem(message: Message) -> impl IntoView {
         .into_view(),
         Message::Input(value) => view! {
             <div class="d-flex flex-row justify-content-end mb-4">
-                <div class="p-3 me-3 border rounded-pill bg-light text-light-emphasis">
+                <div class="p-3 border rounded-pill bg-light text-light-emphasis">
                     <p class="small mb-0">{ value }</p>
                 </div>
             </div>
@@ -114,35 +114,33 @@ pub fn CalculatorComponent() -> impl IntoView {
     let is_invalid = move || state.with(|s| s.error.is_some());
 
     view! {
-        <div id="calculator" class="row d-flex justify-content-center">
+        <div id="calculator" class="row d-flex justify-content-center h-100">
             <div class="col-md-8 col-lg-6 col-xl-4">
-                <div class="card rounded shadow">
-                    <header class="card-header d-flex justify-content-between align-items-center p-3 bg-black text-white rounded-top">
+                <div class="card rounded shadow h-100">
+                    <header class="card-header justify-content-between align-items-center p-3 bg-black text-white rounded-top">
                         <p class="mb-0 fw-bold">Calculator</p>
                     </header>
-                    <div class="card-body h-100">
-                        <div class="overflow-y-auto">
+                    <div class="card-body d-flex flex-wrap flex-row align-items-end w-100">
+                        <div class="w-100 align-self-stretch overflow-auto">
                             {move || state.get().history.iter().map(|message| {
                                 view! {
                                     <MessageItem message=message.clone() />
                                 }
                             }).collect_view() }
                         </div>
-                        <form on:submit=on_submit>
-                            <div class="position-relative">
-                                <input class="form-control" class:is-invalid=is_invalid
-                                    node_ref=input_element_ref />
-                                <Show when=is_invalid>
-                                    <div class="invalid-feedback">{ move || state.with(|s| s.error.clone()) }</div>
-                                </Show>
-                                <div class="row form-text">
-                                    <div class="col">(Press enter)</div>
-                                    <div class="col text-end">
-                                        <div class="form-check form-switch form-check-reverse">
-                                            <label class="form-check-label">{ format }</label>
-                                            <input class="form-check-input" type="checkbox" role="switch"
-                                                checked=move || state.with(|s| s.postfix) on:click=on_click />
-                                        </div>
+                        <form class="w-100" on:submit=on_submit>
+                            <input class="form-control" class:is-invalid=is_invalid
+                                node_ref=input_element_ref />
+                            <Show when=is_invalid>
+                                <div class="invalid-feedback">{ move || state.with(|s| s.error.clone()) }</div>
+                            </Show>
+                            <div class="row form-text">
+                                <div class="col">(Press enter)</div>
+                                <div class="col text-end">
+                                    <div class="form-check form-switch form-check-reverse">
+                                        <label class="form-check-label">{ format }</label>
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                            checked=move || state.with(|s| s.postfix) on:click=on_click />
                                     </div>
                                 </div>
                             </div>

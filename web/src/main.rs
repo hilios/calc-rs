@@ -24,7 +24,7 @@ fn main() {
     wasm_logger::init(wasm_logger::Config::default());
     mount_to_body(|| {
         view! {
-            <div class="container py-5 min-vh-100 mh-100">
+            <div class="container py-5 vh-100 mh-100">
                 <CalculatorComponent />
             </div>
         }
